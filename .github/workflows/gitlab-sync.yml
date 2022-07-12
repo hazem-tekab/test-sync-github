@@ -1,0 +1,21 @@
+name: GitlabSync
+
+on:
+  - push
+  - delete
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    name: Git Repo Sync
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        env-file: .env
+    - uses: wangchucheng/git-repo-sync@v0.1.0
+      with:
+        target-url: https://gitlab.com/hazem.tekab/mirror.git
+        target-username: hazem.tekab
+        target-token: glpat-txrwoDrqXCf4WCunLvdk
+
