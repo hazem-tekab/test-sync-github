@@ -1,8 +1,46 @@
 stages:
+  - build-push
   - deploy
 
-push to github:
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY  
+
+Build and push to registry: 
+  stage: build-push
+  only: 
+  - develop
+  tags: 
+    - tekab
+  script: 
+    - docker-compose --profile prod build 
+    - docker-compose --profile prod push
+
+# Deployments
+Deploy to staging: 
   stage: deploy
-  image: watermelonpizza/git
-  script:
-    - git push -q --mirror https://$GITHUB_TOKEN@github.com/$GIT_REPO.git
+  needs:
+    - job: Build and push to registry
+  only: 
+  - develop
+  tags: 
+  - tekab
+  variables:
+    STAGE: DEV
+  script: 
+  - docker-compose --profile prod pull
+  - docker-compose --profile prod --project-name ${CI_PROJECT_NAME}_${STAGE} up -d 
+
+Deploy to prod: 
+  stage: deploy
+  needs:
+    - job: Build and push to registry
+  only: 
+  - develop
+  when: manual
+  tags: 
+  - tekab
+  variables:
+    STAGE: DEV
+  script: 
+  - docker-compose --profile prod pull
+  - docker-compose --profile prod --project-name ${CI_PROJECT_NAME}_${STAGE} up -d 
