@@ -11,7 +11,7 @@ model User {
   createdAt DateTime @default(now())
   firstName String?
   id        String   @id @default(cuid())
-  lastName  String?
+  name  String?
   password  String
   roles     String[]
   updatedAt DateTime @updatedAt
