@@ -1,0 +1,23 @@
+vscode:
+  extensions:
+    - "dbaeumer.vscode-eslint"
+    - "ms-azuretools.vscode-docker"
+    - "esbenp.prettier-vscode"
+    - "mhutchie.git-graph"
+    - "eamodio.gitlens"
+    - "johnsoncodehk.volar"
+
+tasks:
+  - command: |
+      echo "BASE_URL=$(gp url 8000)" >> .env
+      echo "SITE_URL=$(gp url 3001)" >> .env
+      echo "API_URL=$(gp url 3005)" >> .env
+      echo "GITPOD_WORKSPACE_URL=$(gp url 3001)" >> .env
+      chmod +x generate-open-api.sh
+      api_url=$(gp url 3005) ./generate-open-api.sh
+ports:
+  - port: 8000
+    visibility: public
+
+  - port: 3005
+    visibility: public
